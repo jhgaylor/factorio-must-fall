@@ -1,0 +1,21 @@
+{
+    "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+    "runtime.version": "Lua 5.2",
+    "runtime.path": ["?.lua"],
+    "runtime.builtin": {
+        "io": "disable",
+        "os": "disable",
+        "coroutine": "disable",
+        "package": "disable",
+        "math": "disable",
+        "debug": "disable"
+    },
+    "runtime.plugin": "dev/factorio-defs/factorio/plugin.lua",
+    "workspace.library": [
+        "dev/factorio-defs/factorio/library",
+        "dev/flib"
+    ],
+    "diagnostics.globals": ["__DebugAdapter", "__Profiler"],
+    "diagnostics.disable": ["lowercase-global"],
+    "language.fixIndent": false
+}

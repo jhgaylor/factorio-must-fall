@@ -1,0 +1,14 @@
+-- data.lua — the DATA (prototype) stage.
+-- This is where you define and register prototypes (items, recipes, entities,
+-- technologies, etc.) with data:extend{...}. The `data.raw` table holds every
+-- prototype defined so far; mods load in dependency order.
+--
+-- Stage order: settings -> settings-updates -> settings-final-fixes
+--           -> data -> data-updates -> data-final-fixes -> (game starts: control.lua)
+--
+-- Keep this file as a list of requires; put actual prototype definitions in
+-- prototypes/*.lua so each concern stays small and reviewable.
+
+-- require("prototypes.items")
+-- require("prototypes.recipes")
+-- require("prototypes.technology")

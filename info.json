@@ -1,0 +1,25 @@
+{
+    "name": "factorio-must-fall",
+    "version": "0.1.0",
+    "title": "Factorio Must Fall",
+    "author": "jake",
+    "contact": "jake@ravi.id",
+    "homepage": "",
+    "factorio_version": "2.0",
+    "dependencies": [
+        "base >= 2.0",
+        "flib >= 0.16.5"
+    ],
+    "description": "Factorio Must Fall.",
+    "package": {
+        "ignore": [
+            "node_modules",
+            "node_modules/**",
+            "dev",
+            "dev/**",
+            "package.json",
+            "package-lock.json",
+            "CLAUDE.md"
+        ]
+    }
+}

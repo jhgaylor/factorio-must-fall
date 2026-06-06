@@ -1,0 +1,21 @@
+# Built mod packages
+*.zip
+
+# OS / editor cruft
+.DS_Store
+*.swp
+
+# Lua language server / sumneko cache
+.luarc.json.bak
+
+# Node tooling (FMTK is pinned in package.json; reinstall with `npm install`)
+node_modules/
+
+# Generated Factorio API type defs for LuaLS — regenerate with `npm run defs`.
+# Excluded from git (6.8M, version-tied); kept on disk for the editor + agent.
+dev/factorio-defs/
+
+# flib source extracted for LuaLS autocomplete — re-extract with `npm run flib`.
+# It's a declared runtime dependency, not vendored into this mod.
+dev/flib/
+.gstack/
