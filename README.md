@@ -70,3 +70,7 @@ entry in sync (`npm run version` does both).
 - Modding docs / tutorial: https://wiki.factorio.com/Modding
 - Lua runtime API: https://lua-api.factorio.com/latest/
 - Prototype docs: https://lua-api.factorio.com/latest/prototypes.html
+
+## License
+
+[MIT](LICENSE) © Jake Gaylor
