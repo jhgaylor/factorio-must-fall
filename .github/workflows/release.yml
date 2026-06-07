@@ -1,0 +1,58 @@
+name: Release
+
+# Push a tag like v0.4.0 and this builds the mod zip and publishes a GitHub
+# Release with it attached. The tag must match the version in info.json.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install tooling (FMTK)
+        run: npm ci
+
+      - name: Check tag matches info.json version
+        run: |
+          version="$(node -p "require('./info.json').version")"
+          tag="${GITHUB_REF_NAME#v}"
+          if [ "$version" != "$tag" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match info.json version $version"
+            exit 1
+          fi
+
+      - name: Build mod package
+        run: npx fmtk package
+
+      - name: Build release notes
+        run: |
+          version="$(node -p "require('./info.json').version")"
+          {
+            awk -v ver="Version: $version" '
+              /^-+$/ { if (insec) exit; next }
+              /^Version: / { insec = ($0 == ver); next }
+              /^Date: / { next }
+              insec { print }
+            ' changelog.txt
+            cat dev/release-notes-footer.md
+          } > notes.md
+          cat notes.md
+
+      - name: Create release
+        run: |
+          gh release create "$GITHUB_REF_NAME" factorio-must-fall_*.zip \
+            --title "Factorio Must Fall ${GITHUB_REF_NAME#v}" \
+            --notes-file notes.md

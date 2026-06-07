@@ -10,6 +10,7 @@
         "package": "fmtk package",
         "datestamp": "fmtk datestamp",
         "version": "fmtk version",
+        "release": "bash dev/release.sh",
         "publish": "fmtk publish"
     },
     "devDependencies": {

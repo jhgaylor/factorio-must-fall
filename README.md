@@ -84,17 +84,29 @@ rebuild them. None of this is shipped — the mod is pure Lua.
 
 ## Release
 
+Releases are automated. Pushing a `v*` tag triggers
+`.github/workflows/release.yml`, which builds the zip and publishes a GitHub
+Release with it attached (notes come from the matching `changelog.txt` section).
+
 ```bash
-npm run datestamp    # stamp today's date into the top changelog section
-npm run version      # bump info.json + changelog version
-npm run package      # build -> factorio-must-fall_<version>.zip
-npm run publish      # package + upload to the mod portal (needs credentials)
+npm run version      # bump info.json + add a new changelog section
+#                      ...then write that section's notes and commit + push
+npm run release      # tag v<version> from info.json and push it -> CI publishes
+```
+
+The tag must match the `info.json` version, and `changelog.txt` must have a
+section for it (the `release` script checks both).
+
+Manual / mod-portal options:
+
+```bash
+npm run package      # build -> factorio-must-fall_<version>.zip locally
+npm run publish      # package + upload to the mod portal (needs an API key)
 ```
 
 Packaging is handled by FMTK; what gets included is everything except dotfiles,
 `modname_*.zip`, and the globs in `info.json#/package/ignore` (node_modules, dev/,
-package.json, CLAUDE.md). Keep `info.json` `version` and the `changelog.txt` top
-entry in sync (`npm run version` does both).
+package.json, CLAUDE.md).
 
 ## Reference
 

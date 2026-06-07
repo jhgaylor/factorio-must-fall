@@ -56,6 +56,10 @@ EmmyLua annotations in `dev/flib/<module>.lua` for signatures.
 - **`npm run check`** — fast node-only Lua 5.2 syntax gate over all mod `.lua`
   files (catches load-breaking typos without launching Factorio). Run it before
   loading the game. `npm run lint` (luacheck) is deeper but needs a Lua toolchain.
+- **Releases are automated**: `npm run version` (bump + new changelog section),
+  write the notes, commit/push, then `npm run release` pushes a `v<version>` tag.
+  `.github/workflows/release.yml` then builds the zip and publishes a GitHub
+  Release (notes from the matching changelog section). Tag must match info.json.
 - **FMTK** (`factoriomod-debug`) is pinned in `package.json`. Run via `npx fmtk ...`
   or the npm scripts: `npm run package`, `npm run version`, `npm run datestamp`,
   `npm run publish`, `npm run defs`. The VS Code extension
