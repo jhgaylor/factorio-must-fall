@@ -1,6 +1,36 @@
 # Factorio Must Fall
 
-A mod for **Factorio 2.0** (Space Age era; developed against 2.0.76).
+A combat **autobattler** for **Factorio 2.0** (Space Age era; developed against 2.0.76).
+Build a factory that builds an army that fights for you.
+
+## What it does
+
+You craft a **Vehicle Hangar** — a power-hungry assembling machine. Instead of
+items, it builds **hunters**: autonomous spidertron-class war machines that drive
+off on their own, seek out the nearest enemy anywhere nearby, and fight without a
+driver. Clear a nest and they roll on to the next. Lose one and you just build
+another.
+
+Each hunter is a **recipe** combining a **vehicle** (the chassis — how tough it is)
+with **ammo** (the weapon — how hard it hits):
+
+| Hunter  | Recipe (vehicle + ammo)              | Role |
+|---------|--------------------------------------|------|
+| Light   | car + firearm magazines              | cheap, fast, fragile |
+| Medium  | tank + piercing magazines            | sturdier machine-gunner |
+| Heavy   | tank + explosive rockets             | rocket bombardment |
+| Cannon  | tank + explosive cannon shells       | hard-hitting direct fire |
+| Siege   | spidertron + uranium cannon shells   | armored heavy cannons |
+| Nuclear | spidertron + atomic bombs            | walking apocalypse (immune to its own nukes) |
+
+Feed the hangar power and ingredients and it churns out a self-deploying army.
+Tougher vehicles make tankier hunters; stronger ammo makes deadlier ones — so the
+fleet scales with your factory's tech and output.
+
+Gun counts, per-hunter resistances, and friendly fire are all adjustable in
+**Settings → Mod settings**.
+
+> Requires [flib](https://mods.factorio.com/mod/flib).
 
 ## Layout
 
