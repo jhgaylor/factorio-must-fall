@@ -49,6 +49,13 @@ for _, ev in pairs({
     script.on_event(ev, on_removed)
 end
 
+-- Re-apply the friendly-fire setting when it's toggled mid-game.
+script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
+    if event.setting == "fmf-disable-friendly-fire" then
+        autobattler.apply_friendly_fire()
+    end
+end)
+
 -- Main loop ------------------------------------------------------------------
 script.on_nth_tick(CHECK_INTERVAL, function()
     if settings.global["fmf-enabled"].value then

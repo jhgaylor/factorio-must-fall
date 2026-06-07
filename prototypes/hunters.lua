@@ -4,9 +4,14 @@
 -- deployed hunter by scripts/autobattler.lua). All hunters are spider-class
 -- because only SpiderVehicles can autopilot + auto-fire with no driver.
 --
+-- Gun count and a resistance multiplier per tier come from STARTUP mod settings
+-- (see settings.lua). `gun_pool` lists candidate guns; the gun-count setting
+-- takes the first N. The resistance setting scales each tier's tuned profile.
+--
 -- Entity name == token item name == recipe name for each tier, so the runtime
 -- mapping (token -> entity) is a trivial string match. To add a hunter, add one
--- entry to TIERS below AND a matching ammo loadout in scripts/autobattler.lua.
+-- entry to TIERS below, a settings.lua entry, and a matching ammo loadout in
+-- scripts/autobattler.lua.
 
 local flib_data_util = require("__flib__.data-util")
 
@@ -29,22 +34,43 @@ local function tinted_icon(tint)
     return icons
 end
 
+-- Scale a resistance profile's percents/decreases by `mult` (percent capped 100).
+local function scale_resistances(res, mult)
+    if not res or mult == 1 then return res end -- res may be false/nil
+    local out = {}
+    for _, r in pairs(res) do
+        out[#out + 1] = {
+            type = r.type,
+            decrease = (r.decrease or 0) * mult,
+            percent = math.min(100, (r.percent or 0) * mult),
+        }
+    end
+    return out
+end
+
+local LAUNCHERS = {
+    "spidertron-rocket-launcher-1", "spidertron-rocket-launcher-2",
+    "spidertron-rocket-launcher-3", "spidertron-rocket-launcher-4",
+}
+local function repeat_gun(name) return { name, name, name, name } end
+
 -- Per-tier config.
---   guns        : list of gun item names; omit to keep the spidertron's 4 rocket launchers.
---   resistances : array to set; false to strip all; omit to keep spidertron's defaults.
---   tint        : recipe/token icon tint.
---   craft       : recipe craft time in seconds (default 5).
---   ingredients : recipe ingredients {name, amount}; first is the chassis "vehicle".
+--   key         : settings/short name (fmf-<key>-guns, fmf-<key>-resistance)
+--   gun_pool    : candidate guns; the gun-count setting takes the first N
+--   resistances : array to set; false to strip all; omit to keep spidertron's defaults
+--   tint        : recipe/token icon tint
+--   craft       : recipe craft time in seconds (default 5)
+--   ingredients : recipe ingredients {name, amount}; first is the chassis "vehicle"
 local TIERS = {
     {
-        id = "fmf-hunter-light", hp = 150,
-        guns = { "vehicle-machine-gun" }, resistances = false,
+        id = "fmf-hunter-light", key = "light", hp = 150,
+        gun_pool = repeat_gun("vehicle-machine-gun"), resistances = false,
         tint = { r = 0.60, g = 1.00, b = 0.60, a = 1 },
         ingredients = { { "car", 1 }, { "firearm-magazine", 10 } },
     },
     {
-        id = "fmf-hunter-medium", hp = 500,
-        guns = { "tank-machine-gun", "tank-machine-gun" },
+        id = "fmf-hunter-medium", key = "medium", hp = 500,
+        gun_pool = repeat_gun("tank-machine-gun"),
         resistances = {
             { type = "physical",  decrease = 5, percent = 30 },
             { type = "explosion", decrease = 0, percent = 30 },
@@ -53,16 +79,14 @@ local TIERS = {
         ingredients = { { "tank", 1 }, { "piercing-rounds-magazine", 20 } },
     },
     {
-        id = "fmf-hunter-heavy", hp = 1200,
-        -- 2 rocket launchers (down from the spidertron's 4) to rate-limit the
-        -- explosive barrage; keeps default resistances.
-        guns = { "spidertron-rocket-launcher-1", "spidertron-rocket-launcher-2" },
+        id = "fmf-hunter-heavy", key = "heavy", hp = 1200,
+        gun_pool = LAUNCHERS, -- keeps default resistances
         tint = { r = 1.00, g = 0.50, b = 0.40, a = 1 },
         ingredients = { { "tank", 1 }, { "explosive-rocket", 20 } },
     },
     {
-        id = "fmf-hunter-cannon", hp = 700,
-        guns = { "tank-cannon", "tank-cannon" },
+        id = "fmf-hunter-cannon", key = "cannon", hp = 700,
+        gun_pool = repeat_gun("tank-cannon"),
         resistances = {
             { type = "physical",  decrease = 8, percent = 35 },
             { type = "explosion", decrease = 5, percent = 40 },
@@ -72,8 +96,8 @@ local TIERS = {
         ingredients = { { "tank", 1 }, { "explosive-cannon-shell", 20 } },
     },
     {
-        id = "fmf-hunter-siege", hp = 1500,
-        guns = { "tank-cannon", "tank-cannon", "tank-cannon" },
+        id = "fmf-hunter-siege", key = "siege", hp = 1500,
+        gun_pool = repeat_gun("tank-cannon"),
         resistances = {
             { type = "physical",  decrease = 15, percent = 50 },
             { type = "explosion", decrease = 10, percent = 50 },
@@ -84,13 +108,11 @@ local TIERS = {
         ingredients = { { "spidertron", 1 }, { "uranium-cannon-shell", 20 } },
     },
     {
-        id = "fmf-hunter-nuclear", hp = 2000,
-        -- A single rocket launcher (down from 4): one atomic bomb per cooldown
-        -- is plenty and avoids dumping a 4-nuke barrage at one spot.
-        guns = { "spidertron-rocket-launcher-1" },
+        id = "fmf-hunter-nuclear", key = "nuclear", hp = 2000,
+        gun_pool = LAUNCHERS,
         -- 100% explosion resistance = immune to nuclear blasts (the whole nuke
-        -- chain deals only "explosion" damage), incl. its own and other nukes.
-        -- Still dies to biters (physical/acid).
+        -- chain deals only "explosion" damage). Note: a resistance multiplier
+        -- below 1.0 lowers this and the hunter can start nuking itself.
         resistances = {
             { type = "explosion", decrease = 1000, percent = 100 },
             { type = "physical",  decrease = 15,   percent = 60 },
@@ -106,13 +128,24 @@ local TIERS = {
 local prototypes = {}
 
 for _, t in pairs(TIERS) do
+    local gun_count = settings.startup["fmf-" .. t.key .. "-guns"].value
+    local res_mult = settings.startup["fmf-" .. t.key .. "-resistance"].value
+
     local chassis = clone_chassis(t.id)
     chassis.max_health = t.hp
-    if t.guns then chassis.guns = t.guns end
+
+    local guns = {}
+    for i = 1, gun_count do
+        guns[i] = t.gun_pool[i] or t.gun_pool[#t.gun_pool]
+    end
+    chassis.guns = guns
+
     if t.resistances == false then
         chassis.resistances = nil
     elseif t.resistances then
-        chassis.resistances = t.resistances
+        chassis.resistances = scale_resistances(t.resistances, res_mult)
+    else
+        chassis.resistances = scale_resistances(chassis.resistances, res_mult)
     end
     prototypes[#prototypes + 1] = chassis
 

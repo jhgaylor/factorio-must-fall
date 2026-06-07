@@ -1,8 +1,8 @@
 -- Autobattler core: track hangars (assembling-machines), deploy the hunters they
 -- craft, and steer each hunter toward the nearest enemy. Combat is handled by the
 -- engine (a spider-vehicle with ammo and `auto_target_without_gunner` fires on its
--- own); we only supply movement targets via the autopilot. Explosive tiers are
--- rate-limited by giving them fewer launchers (see prototypes/hunters.lua).
+-- own); we only supply movement targets via the autopilot. Gun count, resistance,
+-- and friendly fire are configurable via mod settings (see settings.lua).
 --
 -- The hangar crafts a hidden token item per hunter; we read its output inventory,
 -- spawn the matching chassis (entity name == token name), load the tier's ammo,
@@ -38,14 +38,20 @@ local HUNTERS = {
 --   storage.hangars : table<uint, LuaEntity>  placed hangars
 --   storage.hunters : table<uint, LuaEntity>  active deployed hunters
 
+-- Friendly fire is off (so hunters don't self-damage) unless the runtime setting
+-- re-enables it. Affects the whole player force.
+function autobattler.apply_friendly_fire()
+    local ff = not settings.global["fmf-disable-friendly-fire"].value
+    local player_force = game and game.forces["player"]
+    if player_force then
+        player_force.friendly_fire = ff
+    end
+end
+
 function autobattler.init()
     storage.hangars = storage.hangars or {}
     storage.hunters = storage.hunters or {}
-    -- Hunters fire automatically and can hit themselves/each other (e.g. cannon
-    -- shells). Disable friendly fire on the player force so they don't suicide.
-    if game and game.forces["player"] then
-        game.forces["player"].friendly_fire = false
-    end
+    autobattler.apply_friendly_fire()
 end
 
 local function enable_auto_fire(hunter)
@@ -90,7 +96,8 @@ end
 -- Spawn one hunter of the given type next to its hangar, loaded with ammo.
 local function deploy(hangar, hunter_name, spec)
     local surface = hangar.surface
-    hangar.force.friendly_fire = false -- hunters must not damage themselves/each other
+    -- Apply the friendly-fire setting to the owning force (covers team forces).
+    hangar.force.friendly_fire = settings.global["fmf-disable-friendly-fire"].value == false
 
     local origin = flib_position.add(hangar.position, { x = 0, y = 3 })
     local pos = surface.find_non_colliding_position(hunter_name, origin, SPAWN_RADIUS, 1)
