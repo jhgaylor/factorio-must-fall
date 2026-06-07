@@ -54,7 +54,9 @@ local TIERS = {
     },
     {
         id = "fmf-hunter-heavy", hp = 1200,
-        -- keeps the spidertron's 4 rocket launchers + default resistances
+        -- 2 rocket launchers (down from the spidertron's 4) to rate-limit the
+        -- explosive barrage; keeps default resistances.
+        guns = { "spidertron-rocket-launcher-1", "spidertron-rocket-launcher-2" },
         tint = { r = 1.00, g = 0.50, b = 0.40, a = 1 },
         ingredients = { { "tank", 1 }, { "explosive-rocket", 20 } },
     },
@@ -83,7 +85,9 @@ local TIERS = {
     },
     {
         id = "fmf-hunter-nuclear", hp = 2000,
-        -- keeps the 4 rocket launchers (rocket category fits atomic-bomb).
+        -- A single rocket launcher (down from 4): one atomic bomb per cooldown
+        -- is plenty and avoids dumping a 4-nuke barrage at one spot.
+        guns = { "spidertron-rocket-launcher-1" },
         -- 100% explosion resistance = immune to nuclear blasts (the whole nuke
         -- chain deals only "explosion" damage), incl. its own and other nukes.
         -- Still dies to biters (physical/acid).

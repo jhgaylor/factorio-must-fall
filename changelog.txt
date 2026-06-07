@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.1
+Date: 2026-06-06
+  Changes:
+    - The Vehicle Hangar now requires electricity (1MW) instead of being
+      free-powered, and emits pollution while running.
+    - Rate-limited the explosive hunters to reduce wasted overkill: Heavy now
+      has 2 rocket launchers (was 4) and Nuclear has 1 (was 4), so they fire a
+      smaller volley per cooldown instead of dumping a barrage at one spot.
+    - Hunters now deploy with a full stack of ammo per gun slot.
+    - Disabled friendly fire on the player force so hunters no longer kill
+      themselves or each other with their own weapons (e.g. Cannon/Siege shells).
+---------------------------------------------------------------------------------------------------
 Version: 0.3.0
 Date: 2026-06-06
   Features:
@@ -16,9 +28,6 @@ Date: 2026-06-06
       (spidertron + atomic bombs). Nuclear Hunters are immune to nuclear blasts
       (their own and others'); the blast still damages other friendly units and
       buildings, so deploy them away from your base.
-    - Hunters now deploy with a full stack of ammo per gun slot.
-    - Disabled friendly fire on the player force so hunters no longer kill
-      themselves or each other with their own weapons (e.g. Cannon/Siege shells).
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.0
 Date: 2026-06-06

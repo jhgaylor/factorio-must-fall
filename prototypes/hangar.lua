@@ -16,8 +16,9 @@ data:extend({ { type = "recipe-category", name = "fmf-hunter" } })
 local entity = flib_data_util.copy_prototype(data.raw["assembling-machine"]["assembling-machine-2"], HANGAR)
 entity.crafting_categories = { "fmf-hunter" }
 entity.crafting_speed = 1
-entity.energy_source = { type = "void" } -- no power hookup needed
-entity.energy_usage = "150kW"
+-- Requires electricity: keep the cloned assembling-machine-2 electric source
+-- (and its pollution), but draw serious power for a war factory.
+entity.energy_usage = "1MW"
 entity.max_health = 500
 entity.next_upgrade = nil        -- don't let upgrade planner turn it into AM-3
 entity.fast_replaceable_group = nil

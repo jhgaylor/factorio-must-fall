@@ -1,7 +1,8 @@
 -- Autobattler core: track hangars (assembling-machines), deploy the hunters they
 -- craft, and steer each hunter toward the nearest enemy. Combat is handled by the
 -- engine (a spider-vehicle with ammo and `auto_target_without_gunner` fires on its
--- own); we only supply movement targets via the autopilot.
+-- own); we only supply movement targets via the autopilot. Explosive tiers are
+-- rate-limited by giving them fewer launchers (see prototypes/hunters.lua).
 --
 -- The hangar crafts a hidden token item per hunter; we read its output inventory,
 -- spawn the matching chassis (entity name == token name), load the tier's ammo,
@@ -47,13 +48,26 @@ function autobattler.init()
     end
 end
 
--- Rebuild the hangar list from the world (used on configuration changes).
+local function enable_auto_fire(hunter)
+    hunter.vehicle_automatic_targeting_parameters = {
+        auto_target_without_gunner = true,
+        auto_target_with_gunner = true,
+    }
+end
+
+-- Rebuild the hangar list from the world (used on configuration changes), and
+-- make sure every tracked hunter has engine auto-fire on.
 function autobattler.rescan()
     autobattler.init()
     storage.hangars = {}
     for _, surface in pairs(game.surfaces) do
         for _, entity in pairs(surface.find_entities_filtered({ name = HANGAR })) do
             storage.hangars[entity.unit_number] = entity
+        end
+    end
+    for _, hunter in pairs(storage.hunters) do
+        if hunter.valid then
+            enable_auto_fire(hunter)
         end
     end
 end
@@ -105,10 +119,7 @@ local function deploy(hangar, hunter_name, spec)
         hunter.insert({ name = spec.ammo, count = stack })
     end
 
-    hunter.vehicle_automatic_targeting_parameters = {
-        auto_target_without_gunner = true,
-        auto_target_with_gunner = true,
-    }
+    enable_auto_fire(hunter)
 
     storage.hunters[hunter.unit_number] = hunter
     rendering.draw_text({
