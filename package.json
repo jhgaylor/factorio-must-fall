@@ -5,6 +5,7 @@
     "scripts": {
         "defs": "fmtk luals-addon -o 2.0.76 dev/factorio-defs",
         "flib": "rm -rf dev/flib dev/.flib-tmp && mkdir -p dev/flib && unzip -q -o \"$HOME/Library/Application Support/factorio/mods/\"flib_*.zip -d dev/.flib-tmp && mv dev/.flib-tmp/*/* dev/flib/ && rm -rf dev/.flib-tmp",
+        "check": "node dev/check-syntax.mjs",
         "lint": "luacheck .",
         "package": "fmtk package",
         "datestamp": "fmtk datestamp",
@@ -12,6 +13,7 @@
         "publish": "fmtk publish"
     },
     "devDependencies": {
-        "factoriomod-debug": "^2.0.14"
+        "factoriomod-debug": "^2.0.14",
+        "luaparse": "^0.3.1"
     }
 }

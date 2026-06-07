@@ -1,4 +1,31 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 2026-06-06
+  Features:
+    - The Vehicle Hangar is now an assembling-machine with selectable hunter
+      recipes. Vehicle ingredient sets the chassis, ammo ingredient sets the
+      weapon. Three tiers: Light (car + yellow magazines), Medium (tank + red
+      magazines), Heavy (tank + explosive rockets). Crafted hunters auto-deploy.
+    - Hunters are tinted by tier (Light green, Medium amber, Heavy red).
+    - Hunters now keep hunting: after clearing an area they retarget the next
+      nearest enemy anywhere on the surface instead of idling.
+    - Lowered hunter health (Light 150, Medium 500, Heavy 1200) so they can
+      actually be lost and need replacing.
+    - Fleet expansion: Cannon Hunter (tank + explosive cannon shells), Siege
+      Hunter (spidertron + uranium cannon shells), and Nuclear Hunter
+      (spidertron + atomic bombs). Nuclear Hunters are immune to nuclear blasts
+      (their own and others'); the blast still damages other friendly units and
+      buildings, so deploy them away from your base.
+    - Hunters now deploy with a full stack of ammo per gun slot.
+    - Disabled friendly fire on the player force so hunters no longer kill
+      themselves or each other with their own weapons (e.g. Cannon/Siege shells).
+---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 2026-06-06
+  Features:
+    - Vehicle Hangar: load it with a spidertron and ammo to launch a loaded
+      spidertron that autonomously pathfinds to and fires on nearby enemies.
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 2026-06-06
   Features:

@@ -111,7 +111,9 @@ entries 4 spaces + `- `. Keep `version` here matched to `info.json`.
   name, no version). Enable in Mods menu.
 - Edit Lua → restart Factorio or reload the save (no hot reload). Quick runtime
   pokes via in-game console `/c game.player.print(...)` (disables achievements).
-- `luacheck .` — lint (globals in `.luacheckrc`).
+- `npm run check` — fast node-only Lua 5.2 syntax gate over all mod `.lua` files;
+  run before loading Factorio to catch load-breaking typos. `npm run lint`
+  (luacheck) is deeper but needs a Lua toolchain.
 - Package with `npm run package` (FMTK). It zips everything except dotfiles,
   `modname_*.zip`, and the globs in `info.json#/package/ignore` (node_modules,
   dev/, package.json, CLAUDE.md). Bump version with `npm run version`, datestamp
@@ -125,7 +127,6 @@ flib (Factorio Library) is a declared dependency (`flib >= 0.16.5`). Require mod
 as `local flib_x = require("__flib__.x")`. Reach for these instead of reinventing:
 
 ```lua
-local migration = require("__flib__.migration")   -- version-keyed migrations
 local on_tick_n = require("__flib__.on-tick-n")    -- schedule task for a future tick
 local position  = require("__flib__.position")     -- pos math (shorthand + explicit)
 local bbox      = require("__flib__.bounding-box")
@@ -137,6 +138,8 @@ local format    = require("__flib__.format")        -- number (commas/SI), tick-
 Other modules: `direction`, `orientation`, `math`, `queue`, `dictionary`
 (runtime translation, heavy), `gui-templates`, and data-stage helpers
 `data-util`, `prototypes`, `technology`, plus `reverse-defines`, `locale`.
+NOTE: flib's `migration` module is deprecated — use Lua migration files
+(`migrations/*.lua`) and `helpers.compare_versions` in `on_configuration_changed`.
 
 flib has **no online docs** — read the EmmyLua annotations in `dev/flib/<module>.lua`
 (gitignored; `npm run flib` re-extracts from the installed mod). LuaLS picks it up

@@ -40,7 +40,6 @@ See `README.md` for the full file map. Key entry points: `settings.lua`,
 ## flib (Factorio Library) — reach for it before reinventing
 Declared dependency (`flib >= 0.16.5` in `info.json`). Used via
 `require("__flib__.<module>")`. Prefer flib helpers over hand-rolling:
-- `migration` — version-keyed migrations in `on_configuration_changed`.
 - `on-tick-n` — schedule a task for a future tick (vs manual `on_tick` bookkeeping).
 - `position`, `bounding-box`, `direction`, `orientation`, `math` — geometry/math.
 - `table` — deep copy/merge, map/filter/reduce, `for_n_of`.
@@ -54,6 +53,9 @@ from the installed mod with `npm run flib`. flib has no online docs — read the
 EmmyLua annotations in `dev/flib/<module>.lua` for signatures.
 
 ## Tooling (FMTK + LuaLS)
+- **`npm run check`** — fast node-only Lua 5.2 syntax gate over all mod `.lua`
+  files (catches load-breaking typos without launching Factorio). Run it before
+  loading the game. `npm run lint` (luacheck) is deeper but needs a Lua toolchain.
 - **FMTK** (`factoriomod-debug`) is pinned in `package.json`. Run via `npx fmtk ...`
   or the npm scripts: `npm run package`, `npm run version`, `npm run datestamp`,
   `npm run publish`, `npm run defs`. The VS Code extension

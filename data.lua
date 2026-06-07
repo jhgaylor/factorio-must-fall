@@ -9,6 +9,5 @@
 -- Keep this file as a list of requires; put actual prototype definitions in
 -- prototypes/*.lua so each concern stays small and reviewable.
 
--- require("prototypes.items")
--- require("prototypes.recipes")
--- require("prototypes.technology")
+require("prototypes.hangar")
+require("prototypes.hunters")

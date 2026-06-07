@@ -34,7 +34,8 @@ npm install          # one-time: pull pinned FMTK tooling
 npm run defs         # one-time: generate Factorio API type defs into dev/factorio-defs/
 npm run flib         # one-time: extract flib into dev/flib/ for LuaLS autocomplete
 ./dev/link.sh        # symlink into ~/Library/Application Support/factorio/mods/
-luacheck .           # lint (config in .luacheckrc)
+npm run check        # fast Lua syntax gate (node-only) — run before loading the game
+luacheck .           # deeper lint (needs a Lua toolchain; config in .luacheckrc)
 ```
 
 Then start Factorio. Enable the mod in **Mods**. After Lua edits, restart

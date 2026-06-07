@@ -1,30 +1,57 @@
 -- control.lua — the RUNTIME (control) stage.
--- This runs inside a live game. The data/prototype stage is DONE; you no longer
--- touch `data.raw`. Instead you use the runtime API: `game`, `script`, `defines`,
--- `storage`, `settings`, `rendering`, etc.
---
--- 2.0 NOTE: the persistent per-save table is `storage` (it was named `global`
--- before 2.0). Anything you put in `storage` is saved/loaded and must be
--- deterministic — never store functions, metatables, or LuaObjects you can't
--- re-fetch. Everything here must be deterministic for multiplayer to stay in sync.
+-- See CLAUDE.md for the data-vs-control split and the 2.0 `storage` rule. This
+-- file only wires the engine to scripts/autobattler.lua; the logic lives there.
 
-local function init()
-    storage.players = storage.players or {}
+local autobattler = require("scripts.autobattler")
+
+local CHECK_INTERVAL = 60 -- run launch + hunt logic once per second
+
+-- Lifecycle ------------------------------------------------------------------
+script.on_init(autobattler.init)
+script.on_configuration_changed(autobattler.rescan)
+
+-- Track hangars as they appear / disappear -----------------------------------
+local function on_built(event)
+    local entity = event.entity
+    if entity and entity.valid then
+        autobattler.register_hangar(entity)
+    end
 end
 
--- Fired once when the mod is first added to a save (or a new game starts).
-script.on_init(init)
+-- Also fires for hunter deaths, which clears them from `storage`.
+local function on_removed(event)
+    local entity = event.entity
+    if entity then
+        autobattler.unregister_entity(entity)
+    end
+end
 
--- Fired when mods/versions change on an existing save — run migrations here.
-script.on_configuration_changed(function(_event)
-    init()
-end)
+local build_events = {
+    defines.events.on_built_entity,
+    defines.events.on_robot_built_entity,
+    defines.events.script_raised_built,
+    defines.events.script_raised_revive,
+}
+-- Space Age adds platform building; only present when that mod is active.
+if defines.events.on_space_platform_built_entity then
+    build_events[#build_events + 1] = defines.events.on_space_platform_built_entity
+end
+for _, ev in pairs(build_events) do
+    script.on_event(ev, on_built)
+end
 
--- Example event handler. settings.global holds runtime-global mod settings.
-script.on_event(defines.events.on_player_created, function(event)
-    if not settings.global["fmf-enabled"].value then return end
-    local player = game.get_player(event.player_index)
-    if player then
-        player.print("[Factorio Must Fall] active.")
+for _, ev in pairs({
+    defines.events.on_player_mined_entity,
+    defines.events.on_robot_mined_entity,
+    defines.events.on_entity_died,
+    defines.events.script_raised_destroy,
+}) do
+    script.on_event(ev, on_removed)
+end
+
+-- Main loop ------------------------------------------------------------------
+script.on_nth_tick(CHECK_INTERVAL, function()
+    if settings.global["fmf-enabled"].value then
+        autobattler.on_interval()
     end
 end)
