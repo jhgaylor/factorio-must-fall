@@ -3,6 +3,11 @@
 A combat **autobattler** for **Factorio 2.0** (Space Age era; developed against 2.0.76).
 Build a factory that builds an army that fights for you.
 
+> Not affiliated with — but surely name-inspired by —
+> [The Factory Must Fall](https://store.steampowered.com/app/3970860/The_Factory_Must_Fall/),
+> a standalone game in the same genre that was already on Steam (though not yet
+> released) when this mod was made. Check it out if you want more of this.
+
 ## What it does
 
 You craft a **Vehicle Hangar** — a power-hungry assembling machine. Instead of
